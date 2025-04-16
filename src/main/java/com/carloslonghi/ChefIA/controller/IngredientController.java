@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/ingredient")
@@ -28,33 +29,28 @@ public class IngredientController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Ingredient> getById(@PathVariable Long id) {
-        Ingredient ingredient = ingredientService.getById(id);
-        return ResponseEntity.ok(ingredient);
+    public ResponseEntity<Optional<Ingredient>> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(ingredientService.getById(id));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Ingredient> update(@PathVariable Long id, @RequestBody Ingredient ingredient) {
-        Ingredient ingredientUpdated = ingredientService.update(id, ingredient);
-        if (ingredientUpdated != null){
-            return ResponseEntity.ok(ingredientUpdated);
-        }
-        return ResponseEntity.notFound().build();
+        return ingredientService.getById(id)
+                .map(ingredientFound -> {
+                    ingredient.setId(ingredientFound.getId());
+                    Ingredient ingredientUpdated = ingredientService.update(ingredient);
+                    return ResponseEntity.ok(ingredientUpdated);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
-        Ingredient ingredientFound = ingredientService.getById(id);
-        if (ingredientFound != null) {
+        Optional<Ingredient> ingredientFound = ingredientService.getById(id);
+        if (ingredientFound.isPresent()) {
             ingredientService.delete(id);
             return ResponseEntity.ok("Ingrediente deletado");
         }
         return ResponseEntity.notFound().build();
-    }
-
-    @PostMapping("/test")
-    public Ingredient testMapping(@RequestBody Ingredient ingredient) {
-        System.out.println("Category: " + ingredient.getCategory());
-        return ingredient;
     }
 }

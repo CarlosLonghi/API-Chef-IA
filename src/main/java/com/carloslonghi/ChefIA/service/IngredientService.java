@@ -22,22 +22,12 @@ public class IngredientService {
         return ingredientRepository.findAll();
     }
 
-    public Ingredient getById(Long id) {
-        Optional<Ingredient> ingredient = ingredientRepository.findById(id);
-        return ingredient.orElse(null);
+    public Optional<Ingredient> getById(Long id) {
+        return ingredientRepository.findById(id);
     }
 
-    public Ingredient update(Long id, Ingredient ingredient) {
-        Optional<Ingredient> ingredientFound = ingredientRepository.findById(id);
-        if (ingredientFound.isPresent()) {
-            Ingredient ingredientToUpdate = ingredientFound.get();
-            ingredientToUpdate.setName(ingredient.getName());
-            ingredientToUpdate.setCategory(ingredient.getCategory());
-            ingredientToUpdate.setQuantity(ingredient.getQuantity());
-            ingredientToUpdate.setValidate(ingredient.getValidate());
-            return ingredientRepository.save(ingredientToUpdate);
-        }
-        return null;
+    public Ingredient update(Ingredient ingredient) {
+        return ingredientRepository.save(ingredient);
     }
 
     public void delete(Long id) {

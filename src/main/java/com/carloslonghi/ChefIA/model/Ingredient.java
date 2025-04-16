@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "ingredient")
+@Table(name = "ingredients")
 @RequiredArgsConstructor
 @Data
 public class Ingredient {
